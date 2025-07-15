@@ -1,10 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// Заменить на свой GitHub repo
-const repo = 'https://github.com/losha6ka/FashionArena.git'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: `/${repo}/`,  // 👈 важно для GitHub Pages
+  base: './', // важно для корректных относительных путей
   plugins: [react()],
-})
+});

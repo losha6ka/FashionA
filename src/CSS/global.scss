@@ -1,0 +1,234 @@
+@use "sass:math";
+$html-font-size: 16px;
+@function stripUnit($value) {
+    @return math.div($value, ($value * 0 + 1));
+}
+@function rem($pxValue) {
+    @return #{math.div(stripUnit($pxValue), stripUnit($html-font-size))}rem;
+}
+$maxWidth: 1920;
+$maxWidthContainer: 1370;
+@mixin adaptiv-value($property, $startSize, $minSize, $type) {
+    $addSize: $startSize - $minSize;
+    @if $type==1 {
+        #{$property}: #{$startSize}px;
+        @media (max-width: #{$maxWidthContainer}px) {
+            #{$property}: calc(#{$minSize}px + #{$addSize} * ((100vw - 320px) / (#{$maxWidthContainer} - 320)));
+        }
+    }
+    @else if $type==2 {
+        #{$property}: #{$startSize}px;
+        @media (min-width: #{$maxWidthContainer}px) {
+            #{$property}: calc(#{$minSize}px + #{$addSize} * ((100vw - 320px) / (#{$maxWidth} - 320)));
+        }
+    }
+    @else {
+        #{$property}: calc(#{$minSize}px + #{$addSize} * ((100vw - 320px) / (#{$maxWidth} - 320)));
+    }
+}
+// .sing-up
+.sign-up{
+    &__wrapper{
+           padding-bottom: 50px; 
+    }
+    &__header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+    }
+    &__logo{
+        width: 100%;
+        & img{
+            max-height: 36px;
+            height: 36px;
+        }
+    }
+   &__lang {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+
+    select {
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 5px 30px 5px 10px;
+      font-size: 15px;
+      border-radius: 6px;
+      appearance: none;
+      cursor: pointer;
+      transition: border 0.2s ease;
+      font-family: inherit;
+      position: relative;
+
+      &:hover,
+      &:focus {
+        border-color: #3273dc;
+        box-shadow: 0 0 5px rgba(50, 115, 220, 0.4);
+        outline: none;
+      }
+    }
+
+    &-flag img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+    }
+  }
+
+    &__bg {
+    margin-bottom: 50px;
+    width: 100%;
+    img {
+        width: 100%;          // занимает всю ширину контейнера
+        display: block;       // убирает нижний пробел
+        height: auto;         // сохраняет пропорции
+        object-fit: contain;  // важно, если height задан
+    }
+    }
+    &__container{
+           max-width: 1370px;
+    margin: 0 auto;
+    padding: 0 10px ;
+    }
+    &__title{
+    color: #4a4a4a;
+    font-size: rem(25);
+    font-weight:700;
+    line-height: 1.25;
+}
+&__text{
+    color: #4a4a4a;
+    font-size: rem(25);
+    font-weight: 400;
+    line-height: 1.25;
+} 
+&__link{
+        color: #3273dc;
+    cursor: pointer;
+}
+&__info{
+    
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+    margin-bottom: 40px;
+}
+  
+}
+.sign-up-form{
+        display: flex;
+        flex-direction: column;
+        gap: rem(15);
+        max-width: 660px;
+        &__input{
+            border-radius: 5px;
+            background-color: #fff;
+            border-color: #dbdbdb;
+            color: #363636;
+            box-shadow: inset 0 1px 2px rgba(10, 10, 10, .1);
+            border: 1px solid rgba(10, 10, 10, .1);
+            max-width: 100%;
+            width: 100%;
+            font-size: rem(18);
+            padding: 10px;
+            transition: .3s;
+            &:hover{
+                border: solid 1px black;
+            }
+          &:focus {
+                transition: .3s;
+                box-shadow: 0 0 0 1px rgba(50, 115, 220, 0.5); // внешний glow
+                 border: 1px solid rgba(50, 115, 220, 0.7);
+
+}
+
+        }
+        &__label{
+            color: #363636;
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        &__select{
+            border-radius: 5px;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: inset 0 1px 2px rgba(10, 10, 10, .1);
+            border: 1px solid rgba(10, 10, 10, .1);
+            color: #363636;
+            padding: 10px;
+            cursor: pointer;
+            display: block;
+            font-size: 1em;
+            max-width: 100%;
+            outline: 0;
+            font-size: rem(20);
+            &:hover{
+                border: solid 1px black;
+            }
+                    &:focus {
+                transition: .3s;
+                box-shadow: 0 0 0 1px rgba(50, 115, 220, 0.5); // внешний glow
+                 border: 1px solid rgba(50, 115, 220, 0.7);
+
+}
+        }
+        &__button{
+            margin-top: rem(40);
+            align-self: start;
+            padding: rem(10) rem(15);
+            font-size: rem(25);
+            color: white;
+            background-color: #0b2340;
+            border-radius: 5px;
+            transition: 0.3s;
+            &:hover{
+                transition: 0.3s;
+                background-color: #0f2f57;
+            }
+        }
+        &__error{
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: rem(20);
+            color: red;
+        }
+}
+
+.success-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  background-color: #f9f9f9;
+  padding: 20px;
+
+  &__box {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+  }
+
+  &__subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: #666;
+  }
+}

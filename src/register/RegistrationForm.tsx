@@ -26,12 +26,6 @@ const RegistrationForm = () => {
     const [language, setLanguage] = useState("en");
     const [isLoading, setIsLoading] = useState(false);
 
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID!;
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID!;
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY!;
-    const googleMacros =
-        "https://script.google.com/macros/s/AKfycbxHPiTsu3Z0LCqYyNAwc-bW_FLn7EDjJ-KxWO94yfxOjfEq_6AOr5aWf9Ru0fPlk1XY-A/exec";
-
     useEffect(() => {
         fetch("https://restcountries.com/v3.1/all?fields=name")
             .then((r) => r.json())

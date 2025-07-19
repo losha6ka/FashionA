@@ -79,24 +79,36 @@ const VerifyEmail = () => {
                             : "Chyba při odesílání potvrzení"
                     );
                 }
+                setChecking(false);
+                return true;
             } else {
                 setError("");
             }
         }
         setChecking(false);
+        return false;
     };
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
                 navigate("/");
-            } else {
-                // const interval = setInterval(checkEmailVerified, 3000);
-                // return () => clearInterval(interval);
+                return;
             }
+
+            const intervalId = setInterval(async () => {
+                const result: any = await checkEmailVerified();
+                if (result === true) {
+                    clearInterval(intervalId);
+                }
+            }, 3000);
+
+            return () => clearInterval(intervalId);
         });
+
         return unsubscribe;
     }, [navigate]);
+
 
     return (
         <div className="verify-email">

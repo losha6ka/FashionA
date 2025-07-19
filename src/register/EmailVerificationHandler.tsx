@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { applyActionCode, getAuth } from "firebase/auth";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import "./EmailVerificationHandler.css"; // Создаём для стилизации
 
 const EmailVerificationHandler = () => {
     const [status, setStatus] = useState<"pending" | "success" | "error">("pending");

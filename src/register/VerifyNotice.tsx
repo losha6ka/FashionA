@@ -91,8 +91,8 @@ const VerifyEmail = () => {
             if (!user) {
                 navigate("/");
             } else {
-                // const interval = setInterval(checkEmailVerified, 3000);
-                // return () => clearInterval(interval);
+                const interval = setInterval(checkEmailVerified, 3000);
+                return () => clearInterval(interval);
             }
         });
         return unsubscribe;

@@ -3,9 +3,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
-    onAuthStateChanged,
 } from "firebase/auth";
-import emailjs from "emailjs-com";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../firebase/firebase";
 import logo from "../../img/fapo_logo1.png";

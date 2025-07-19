@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,

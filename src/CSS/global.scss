@@ -232,3 +232,51 @@ $maxWidthContainer: 1370;
     color: #666;
   }
 }
+.verify-email {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 30px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  &__title {
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: #222;
+  }
+
+  &__text {
+    font-size: 16px;
+    margin-bottom: 24px;
+    color: #555;
+  }
+
+  &__button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #0078d7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #005fa3;
+    }
+  }
+
+  &__error {
+    margin-top: 16px;
+    color: #d93025; // красный цвет ошибки
+    font-weight: 600;
+  }
+}

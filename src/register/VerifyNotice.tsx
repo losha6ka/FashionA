@@ -7,8 +7,8 @@ import emailjs from "emailjs-com";
 const VerifyEmail = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    // Принимаем данные формы + язык из состояния навигации
-    const { email, hotel, country, language } = location.state || {};
+    const { form, language } = location.state || {};
+    const { email, hotel, country } = form || {};
     const [isVerified, setIsVerified] = useState(false);
     const [checking, setChecking] = useState(false);
     const [error, setError] = useState("");
@@ -20,6 +20,8 @@ const VerifyEmail = () => {
         "https://script.google.com/macros/s/AKfycbxHPiTsu3Z0LCqYyNAwc-bW_FLn7EDjJ-KxWO94yfxOjfEq_6AOr5aWf9Ru0fPlk1XY-A/exec";
 
     const checkEmailVerified = async () => {
+        if (isVerified) return;
+
         setChecking(true);
         const user = auth.currentUser;
         if (user) {
@@ -27,6 +29,7 @@ const VerifyEmail = () => {
             if (user.emailVerified) {
                 setIsVerified(true);
                 try {
+                    // EmailJS
                     await emailjs.send(
                         SERVICE_ID,
                         TEMPLATE_ID,
@@ -41,11 +44,12 @@ const VerifyEmail = () => {
                         },
                         PUBLIC_KEY
                     );
+
+                    // Google Sheet
                     void fetch(googleMacros, {
                         method: "POST",
                         body: JSON.stringify({ email, hotel, country }),
                     });
-
 
                     navigate("/success", { state: { language } });
                 } catch (err) {
@@ -65,7 +69,15 @@ const VerifyEmail = () => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (!user) navigate("/");
+            if (!user) {
+                navigate("/");
+            } else {
+                const interval = setInterval(() => {
+                    checkEmailVerified();
+                }, 3000);
+
+                return () => clearInterval(interval);
+            }
         });
         return unsubscribe;
     }, [navigate]);

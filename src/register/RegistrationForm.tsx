@@ -5,7 +5,7 @@ import {
     sendEmailVerification,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { db, auth } from "../firebase/firebase";
+import { auth } from "../firebase/firebase";
 import logo from "../../img/fapo_logo1.png";
 import bg from "../../img/fapo_hero_desktop.jpg";
 import LanguageSelect from "./LangSelect";
@@ -44,24 +44,14 @@ const RegistrationForm = () => {
     ) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setIsLoading(true);
 
-        const ref = collection(db, "users");
-
-        if (!form.email || !form.hotel || !form.country) {
+        const { email, hotel, country } = form;
+        if (!email || !hotel || !country) {
             setError("All fields are required");
-            setIsLoading(false);
-            return;
-        }
-
-        const emailSnap = await getDocs(query(ref, where("email", "==", form.email)));
-
-        if (emailSnap.size > 0) {
-            setError("User with this email already exists");
             setIsLoading(false);
             return;
         }
@@ -69,19 +59,17 @@ const RegistrationForm = () => {
         try {
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
-                form.email,
-                "temporaryPass123!"
+                email,
+                "temporaryPass123!" // Пароль временный, ты его не используешь
             );
 
-            // Отправляем письмо для подтверждения почты сразу
             await sendEmailVerification(userCredential.user);
-
-            // Навигация на страницу ожидания подтверждения
-            navigate("/verify", { state: { ...form, language } });
+            navigate("/verify", { state: { language, form } }); // Передаём данные в verify
         } catch (err: any) {
             console.error(err);
             if (err.code === "auth/email-already-in-use") {
-                setError("This email is already in use");
+                // Если пользователь уже есть — просто отправить на страницу verify
+                navigate("/verify", { state: { language, form } });
             } else {
                 setError("Submission failed");
             }
@@ -89,7 +77,6 @@ const RegistrationForm = () => {
             setIsLoading(false);
         }
     };
-
 
     return (
         <div className="sign-up__wrapper">

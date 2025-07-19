@@ -3,7 +3,7 @@ import { auth, db } from "../firebase/firebase";
 import { reload, onAuthStateChanged } from "firebase/auth";
 import { useLocation, useNavigate } from "react-router-dom";
 import { collection, addDoc } from "firebase/firestore";
-import emailjs from "emailjs-com";
+// import emailjs from "emailjs-com";
 
 const VerifyEmail = () => {
     const location = useLocation();
@@ -18,9 +18,9 @@ const VerifyEmail = () => {
     const [checking, setChecking] = useState(false);
     const [error, setError] = useState("");
 
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID!;
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID!;
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY!;
+    // const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID!;
+    // const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID!;
+    // const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY!;
     const googleMacros =
         "https://script.google.com/macros/s/AKfycbxHPiTsu3Z0LCqYyNAwc-bW_FLn7EDjJ-KxWO94yfxOjfEq_6AOr5aWf9Ru0fPlk1XY-A/exec";
 

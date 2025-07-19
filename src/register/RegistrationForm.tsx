@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
+    signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebase";
@@ -54,29 +55,39 @@ const RegistrationForm = () => {
             setIsLoading(false);
             return;
         }
-
+        if (!email || !email.includes("@") || email.length < 5) {
+            setError("Invalid email");
+            setIsLoading(false);
+            return;
+        }
         try {
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                "temporaryPass123!" // Пароль временный, ты его не используешь
-            );
+            let userCredential;
 
-            await sendEmailVerification(userCredential.user);
-            navigate("/verify", { state: { language, form } }); // Передаём данные в verify
-        } catch (err: any) {
-            console.error(err);
-            if (err.code === "auth/email-already-in-use") {
-                // Если пользователь уже есть — просто отправить на страницу verify
-                navigate("/verify", { state: { language, form } });
-            } else {
-                setError("Submission failed");
+            try {
+                userCredential = await createUserWithEmailAndPassword(auth, email, "temporaryPass123!");
+            } catch (err: any) {
+                if (err.code === "auth/email-already-in-use") {
+                    userCredential = await signInWithEmailAndPassword(auth, email, "temporaryPass123!");
+                } else if (err.code === "auth/invalid-email") {
+                    setError("Invalid email format");
+                } else if (err.code === "auth/weak-password") {
+                    setError("Weak password (even if it's temp)");
+                } else {
+                    setError("Unexpected error: " + err.message);
+                }
+
             }
+            if (userCredential) {
+                await sendEmailVerification(userCredential.user);
+                navigate("/verify", { state: { language, form } });
+            }
+        } catch (err) {
+            console.error(err);
+            setError("Submission failed");
         } finally {
             setIsLoading(false);
         }
     };
-
     return (
         <div className="sign-up__wrapper">
             <div className="sign-up__header">

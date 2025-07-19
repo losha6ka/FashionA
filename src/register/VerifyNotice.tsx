@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
-import { auth } from "../firebase/firebase";
-import { onAuthStateChanged, reload } from "firebase/auth";
+import { auth, db } from "../firebase/firebase";
+import { reload, onAuthStateChanged } from "firebase/auth";
 import { useLocation, useNavigate } from "react-router-dom";
+import { collection, addDoc } from "firebase/firestore";
 import emailjs from "emailjs-com";
 
 const VerifyEmail = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { form, language } = location.state || {};
-    const { email, hotel, country } = form || {};
+    const form = location.state?.form;
+    const email = form?.email;
+    const hotel = form?.hotel;
+    const country = form?.country;
+    const language = location.state?.language;
+
     const [isVerified, setIsVerified] = useState(false);
     const [checking, setChecking] = useState(false);
     const [error, setError] = useState("");
@@ -30,22 +35,36 @@ const VerifyEmail = () => {
                 setIsVerified(true);
                 try {
                     // EmailJS
-                    await emailjs.send(
-                        SERVICE_ID,
-                        TEMPLATE_ID,
-                        {
-                            email,
-                            hotel,
-                            country,
-                            image1:
-                                "https://res.cloudinary.com/dgpf7hqht/image/upload/v1752611368/photo_2025-07-15_18-59-19_tx76zx.jpg",
-                            image2:
-                                "https://res.cloudinary.com/dgpf7hqht/image/upload/v1752611360/image_2025-07-15_18-00-42_d2hst8.png",
-                        },
-                        PUBLIC_KEY
-                    );
+                    if (!email) {
+                        console.warn("Email is missing, skipping EmailJS send");
+                        return;
+                    }
 
-                    // Google Sheet
+                    // await emailjs.send(
+                    //     SERVICE_ID,
+                    //     TEMPLATE_ID,
+                    //     {
+                    //         email,
+                    //         hotel,
+                    //         country,
+                    //         image1:
+                    //             "https://res.cloudinary.com/dgpf7hqht/image/upload/v1752611368/photo_2025-07-15_18-59-19_tx76zx.jpg",
+                    //         image2:
+                    //             "https://res.cloudinary.com/dgpf7hqht/image/upload/v1752611360/image_2025-07-15_18-00-42_d2hst8.png",
+
+                    //     },
+                    //     PUBLIC_KEY
+                    // );
+
+                    // Firestore
+                    await addDoc(collection(db, "registrations"), {
+                        email,
+                        hotel,
+                        country,
+                        timestamp: new Date(),
+                    });
+
+                    // Google Sheets
                     void fetch(googleMacros, {
                         method: "POST",
                         body: JSON.stringify({ email, hotel, country }),
@@ -53,12 +72,12 @@ const VerifyEmail = () => {
 
                     navigate("/success", { state: { language } });
                 } catch (err) {
+                    console.error(err);
                     setError(
                         language === "en"
-                            ? "Failed to send final confirmation"
+                            ? "Final confirmation failed"
                             : "Chyba při odesílání potvrzení"
                     );
-                    console.error(err);
                 }
             } else {
                 setError("");
@@ -72,11 +91,8 @@ const VerifyEmail = () => {
             if (!user) {
                 navigate("/");
             } else {
-                const interval = setInterval(() => {
-                    checkEmailVerified();
-                }, 3000);
-
-                return () => clearInterval(interval);
+                // const interval = setInterval(checkEmailVerified, 3000);
+                // return () => clearInterval(interval);
             }
         });
         return unsubscribe;
@@ -85,15 +101,16 @@ const VerifyEmail = () => {
     return (
         <div className="verify-email">
             <h2 className="verify-email__title">
-                {language === "en" ? "Please verify your email" : "Prosím, potvrďte svůj email"}
+                {language === "en"
+                    ? "Please verify your email"
+                    : "Prosím, potvrďte svůj email"}
             </h2>
             <p className="verify-email__text">
                 {language === "en"
-                    ? `A verification email was sent to ${email}. Please check your inbox.`
-                    : `Potvrzovací e-mail byl odeslán na adresu ${email}.`}
+                    ? `A verification email was sent to ${email}. Please check your inbox (or spam folder).`
+                    : `Potvrzovací e-mail byl odeslán na adresu ${email}. Zkontrolujte schránku nebo spam.`}
             </p>
             <button
-                className="verify-email__button"
                 onClick={checkEmailVerified}
                 disabled={checking || isVerified}
             >
